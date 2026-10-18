@@ -1,0 +1,114 @@
+WINDOWS SERVER HEALTH CHECK
+===========================
+
+Purpose
+-------
+This script collects basic health information from a list of Windows servers
+and exports the results to a CSV report.
+
+What the script collects
+------------------------
+For each server listed in the $Servers array, the script attempts to collect:
+
+- Server name
+- Query status (Online or Error)
+- Windows operating system caption
+- Last boot time
+- Local fixed-disk drive letters and percentage of free space
+- Date and time when the check was performed
+- Error message, if a query fails
+
+What you need to edit
+---------------------
+1. Open Get-WindowsServerHealth.ps1 in a text editor or PowerShell ISE.
+2. Find the $Servers array near the top of the script:
+
+   $Servers = @(
+       "SERVER01",
+       "SERVER02"
+   )
+
+3. Replace SERVER01 and SERVER02 with hostnames of servers you are authorized
+   to query. For initial testing, use lab or test servers.
+4. Do not publish real internal hostnames, IP addresses, credentials, or other
+   confidential company information in a public repository.
+
+Requirements and permissions
+----------------------------
+- Windows PowerShell 5.1 or later.
+- Permission to query the target servers.
+- Network connectivity to the target servers.
+- Remote CIM/WMI access configured and permitted by the environment.
+- Firewall rules and remote-management configuration must allow the queries.
+
+Important: a successful ping does not guarantee that remote CIM queries will
+work. The script does not use ping as its connectivity test; it attempts the
+CIM queries and records an error if they fail.
+
+How to run
+----------
+1. Save Get-WindowsServerHealth.ps1 on a Windows machine with PowerShell.
+2. Edit the $Servers array as described above.
+3. Open PowerShell with an account that has the required permissions.
+4. Change to the folder containing the script.
+5. Run:
+
+   .\Get-WindowsServerHealth.ps1
+
+The report is written to:
+
+   ServerHealthReport.csv
+
+The report path is based on $PSScriptRoot, so the CSV is saved in the same
+folder as the script.
+
+Output and interpretation
+-------------------------
+- Online: the script successfully retrieved the operating system and disk data.
+- Error: one or more CIM queries failed. Review ErrorMessage and verify name
+  resolution, network access, permissions, firewall rules, and remote CIM setup.
+- Disks: lists each fixed drive and its percentage of free space. This script
+  does not currently flag low disk space against a threshold.
+
+Limitations
+-----------
+- This is a basic example intended for learning and adaptation.
+- It does not check CPU or memory utilization.
+- It does not check the status of Windows services, despite those being
+  mentioned as a possible future enhancement.
+- It does not perform a ping test.
+- It does not automatically configure WinRM, firewall rules, or permissions.
+- Results depend on the remote management configuration and permissions.
+
+Security and safe use
+---------------------
+- Use only on systems you are authorized to administer.
+- Test against lab systems before using in production.
+- Never hard-code passwords, tokens, or other secrets into the script.
+- Do not commit confidential server names, IPs, user data, or internal details
+  to a public GitHub repository.
+- Review the script and adapt it to your organization's change and security
+  policies before operational use.
+
+Suggested repository layout
+---------------------------
+powershell-infrastructure-toolkit/
+  README.md
+  scripts/
+    Get-WindowsServerHealth.ps1
+  docs/
+    Get-WindowsServerHealth-Guide.txt
+
+Future improvements
+-------------------
+Possible future enhancements include:
+- Add CPU and memory metrics.
+- Add service status checks.
+- Add a configurable low-disk-space warning threshold.
+- Add logging and a summary of failed checks.
+- Add optional parallel execution for larger server lists.
+
+Note
+----
+This document describes the current example script. It should be updated if
+the script's behavior changes.
